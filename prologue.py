@@ -3,6 +3,14 @@ import svgwrite
 from PIL import Image
 import io
 
+
+def cap(sentence):
+    words = sentence.split()
+    capitalized_words = [word.capitalize() for word in words]
+    capitalized_sentence = ' '.join(capitalized_words)
+    return capitalized_sentence
+
+
 def ico_to_svg(ico_data):
     # Open ICO data
     ico_image = Image.open(ico_data)
@@ -26,11 +34,12 @@ def ico_to_svg(ico_data):
     # Return the SVG code
     return dwg.tostring()
 
-def generate_files(name, description, url,mdname,oname):
+
+def generate_files(name, description, url, mdname, oname):
     name_md = (
-        f"# {name.capitalize()} {{{{ typeBadge \"{oname.lower()}\" }}}} {{{{ availabilityBadge \"{oname.lower()}\" }}}}\n"
+        f"# {cap(name)} {{{{ typeBadge \"{oname.lower()}\" }}}} {{{{ availabilityBadge \"{oname.lower()}\" }}}}\n"
         f"\n"
-        f"[{name.capitalize()}]({url}) {description}\n\n"
+        f"[{cap(name)}]({url}) {description}\n\n"
         f"-----\n"
         f"\n"
         f"## Features\n"
@@ -46,7 +55,8 @@ def generate_files(name, description, url,mdname,oname):
         f"\n\n"
         f"## Setup guide\n"
         f"\n"
-        f"Follow our [step-by-step {name.capitalize()} setup guide](/docs/applications/{mdname.lower()}/setup-guide) to connect {name.capitalize()} with your destination using Fivetran connectors.\n")
+        f"Follow our [step-by-step {cap(name)} setup guide](/docs/applications/{mdname.lower()}/setup-guide) to connect {cap(name)} with your destination using Fivetran connectors.\n"
+    )
     with open(f"{mdname.lower()}.md", "w") as f:
         f.write(name_md)
 
@@ -65,9 +75,9 @@ def generate_files(name, description, url,mdname,oname):
     ss = type_mapping.get(service, "")
     name_config_yaml = f"""---
 service:
-  name: "{name.capitalize()}"
+  name: "{cap(name)}"
   description: "{description}"
-  docsPath: "/docs/applications/{oname.lower()}"
+  docsPath: "/docs/applications/{mdname.lower()}"
   logo: "/integrations/coil_connectors/resources/{oname.lower()}/resources/{oname.lower()}.svg"
   availability: "development"
   connectorType: "lite"
@@ -79,19 +89,19 @@ metrics: {{}}
     with open(f"{oname.lower()}.config.yaml", "w") as f:
         f.write(name_config_yaml)
 
-    name_yaml = f"""    - name: {name.capitalize()}
+    name_yaml = f"""    - name: {cap(name)}
       hidden: true
       file: {mdname.lower()}.md
       path: /docs/applications/{mdname.lower()}
-      title: {name.capitalize()} connector by Fivetran | Fivetran documentation
-      description: Connect your {name.capitalize()} data to your destination using Fivetran. Learn about configuration requirements, setup, and ERDs with our technical documentation.
+      title: {cap(name)} connector by Fivetran | Fivetran documentation
+      description: Connect your {cap(name)} data to your destination using Fivetran. Learn about configuration requirements, setup, and ERDs with our technical documentation.
       children:
         - name: Setup Guide
           hidden: true
           file: {mdname.lower()}-setup-guide.md
           path: /docs/applications/{mdname.lower()}/setup-guide
-          title: {name.capitalize()} data connector by Fivetran | Setup Guide
-          description: Read step-by-step instructions on how to connect {name.capitalize()} with your destination using Fivetran connectors."""
+          title: {cap(name)} data connector by Fivetran | Setup Guide
+          description: Read step-by-step instructions on how to connect {cap(name)} with your destination using Fivetran connectors."""
     with open(f"{oname.lower()}.yaml", "w") as f:
         f.write(name_yaml)
 
@@ -147,7 +157,46 @@ metrics: {{}}
     else:
         print("No favicon found.")
 
-# Example usage
+
+def generate_setup_guide(mdname, oname):
+    setup_guide = (
+        f"# {cap(name)} Setup Guide {{{{ typeBadge \"{oname.lower()}\" }}}} {{{{ availabilityBadge \"{oname.lower()}\" }}}}\n"
+        f"\n"
+        f"Follow our setup guide to connect {cap(name)} to Fivetran.\n"
+        f"\n"
+        f"------\n"
+        f"\n"
+        f"## Prerequisites\n"
+        f"\n"
+        f"To connect {cap(name)} to Fivetran, you need a [{cap(name)}]({url}) account.\n"
+        f"\n"
+        f"------\n"
+        f"\n"
+        f"## Setup instructions\n"
+        f"\n"
+        f"### <span class=\"step-item\">Heading</span>\n"
+        f"Write Steps here\n"
+        f"> Note : \n"
+        f"\n"
+        f"### <span class=\"step-item\">Finish Fivetran configuration </span>\n"
+        f"\n"
+        f"Steps here\n"
+        f"\n"
+        f"-----\n"
+        f"\n"
+        f"## Related articles\n"
+        f"\n"
+        f"[<i aria-hidden=\"true\" class=\"material-icons\">description</i> Connector Overview](/docs/applications/{mdname})\n"
+        f"\n"
+        f"<b> </b>\n"
+        f"\n"
+        f"[<i aria-hidden=\"true\" class=\"material-icons\">home</i> Documentation Home](/docs/getting-started)\n"
+    )
+    with open(f"{mdname.lower()}-setup-guide.md", "w") as f:
+        f.write(setup_guide)
+
+
+print("Shashank Industries Production")
 name = input("Enter API name: ")
 mdname = name.replace(' ', '-')
 oname = name.replace(' ', '_')
@@ -164,5 +213,5 @@ print("7. Sales")
 print("8. Security")
 print("9. BITool")
 service = int(input("Enter the choice number: "))
-generate_files(name, description, url,mdname,oname)
-
+generate_files(name, description, url, mdname, oname)
+generate_setup_guide(mdname, oname)
