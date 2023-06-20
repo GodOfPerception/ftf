@@ -26,7 +26,7 @@ def take_inputs():
     print("9. BITool")
     service = int(input("Enter the choice number: "))
 try:
-    file_location = input("Enter the file location: ")
+    file_location = "input.json"
 
     with open(file_location, 'r') as file:
         json_data = json.load(file)
@@ -124,10 +124,10 @@ def generate_files(name, description, url, mdname, oname):
         f"## Features\n"
         f"\n"
         f"{{{{#featureTable \"{oname.lower()}\"}}}}\n"
-        f"Capture Deletes: All tables\n"
+        f"Capture Deletes: {capture_deletes}\n"
         f"Column Hashing:\n"
-        f"Data Blocking: Column level\n"
-        f"Re-sync: Connector level\n"
+        f"Data Blocking: \n"
+        f"Re-sync:\n"
         "{{/featureTable}}\n"
         f"\n"
         f"-----\n"
@@ -160,8 +160,9 @@ service:
   logo: "/integrations/coil_connectors/resources/{oname.lower()}/resources/{oname.lower()}.svg"
   availability: "development"
   connectorType: "lite"
-  type: "{ss}"
-  languageVersion: "2.0.0"
+  coil:
+    type: "{ss}"
+    languageVersion: "2.0.0"
 api: {{}}
 metrics: {{}}
 """
@@ -217,6 +218,10 @@ metrics: {{}}
                 file.write(svg_code)
 
             print(f"SVG code saved as {name.lower()}.svg")
+        elif response.headers.get('content-type') == 'image/svg+xml':
+            with open(f"{oname.lower()}.svg", "wb") as file:
+                file.write(favicon_data)
+                print(f"SVG favicon saved as {oname.lower()}.svg")
         else:
             try:
                 # Check if the favicon is in PNG format
@@ -241,8 +246,6 @@ metrics: {{}}
 
 
 
-
-print("Shashank Industries Production")
 generate_setup_guide(mdname, oname)
 generate_files(name, description, url, mdname, oname)
 
